@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+  {% include 'navbar.html' %}
+
+  <div class="container" style="padding-top: 3rem;">
+    <div class="row mt-5">
+      {{ div_chart|safe }}
+    </div>
+  </div>
+
+  {{ script_chart|safe }}
+{% endblock %}
