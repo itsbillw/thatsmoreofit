@@ -63,7 +63,7 @@ def season_chart(df, colors, league):
     p = figure(x_axis_type="datetime", plot_height=550,
                plot_width=1100, toolbar_location='right')
 
-    p.title.text = "Premier League"
+    p.title.text = league
     p.xaxis.axis_label = 'Match Date'
     p.yaxis.axis_label = 'Points'
 
