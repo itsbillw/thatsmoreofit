@@ -58,11 +58,12 @@ def parse_season_data(filename):
     return results
 
 
-def season_chart(df, colors):
+def season_chart(df, colors, league):
 
     p = figure(x_axis_type="datetime", plot_height=550,
                plot_width=1100, toolbar_location='right')
 
+    p.title.text = "Premier League"
     p.xaxis.axis_label = 'Match Date'
     p.yaxis.axis_label = 'Points'
 
@@ -71,11 +72,18 @@ def season_chart(df, colors):
     teams = df.sort_values(["Points"], ascending=False)[
         "Team"].unique().tolist()
 
-    for team in teams:
-        source = ColumnDataSource(df[df['Team'] == team])
-        l = p.line('Date', 'Points', source=source, color=colors[team])
-        c = p.circle('Date', 'Points', source=source, color=colors[team])
-        legend_it.append((team, [c, l]))
+    if league == "Premier League":
+        for team in teams:
+            source = ColumnDataSource(df[df['Team'] == team])
+            l = p.line('Date', 'Points', source=source, color=colors[team])
+            c = p.circle('Date', 'Points', source=source, color=colors[team])
+            legend_it.append((team, [c, l]))
+    else:
+        for team, color in zip(teams, colors):
+            source = ColumnDataSource(df[df['Team'] == team])
+            l = p.line('Date', 'Points', source=source, color=color)
+            c = p.circle('Date', 'Points', source=source, color=color)
+            legend_it.append((team, [c, l]))
 
     hover = HoverTool(
         tooltips=[
