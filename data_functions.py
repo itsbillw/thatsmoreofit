@@ -58,12 +58,12 @@ def parse_season_data(filename):
     return results
 
 
-def season_chart(df, colors, league):
+def season_chart(df, colors, league, season):
 
     p = figure(x_axis_type="datetime", plot_height=550,
                plot_width=1100, toolbar_location='right')
 
-    p.title.text = league
+    p.title.text = league + " " + season
     p.xaxis.axis_label = 'Match Date'
     p.yaxis.axis_label = 'Points'
 

@@ -7,25 +7,35 @@ from bokeh.palettes import Category20
 
 from data_functions import parse_season_data, season_chart
 
-# web resource
-# filename = "http://www.football-data.co.uk/mmz4281/1920/E0.csv"
 
-# local testing
-# filename = "static/data/football_data.csv"
-
-# python anywhere local file
-# filename = "/home/billw/mysite/static/data/football_data.csv"
-
-leagues = {
-    "Premier League": "http://www.football-data.co.uk/mmz4281/1920/E0.csv",
-    "La Liga": "http://www.football-data.co.uk/mmz4281/1920/SP1.csv",
-    "Serie A": "http://www.football-data.co.uk/mmz4281/1920/I1.csv",
-    "Bundesliga": "http://www.football-data.co.uk/mmz4281/1920/D1.csv",
-    "Ligue 1": "http://www.football-data.co.uk/mmz4281/1920/F1.csv",
-    "Eredivisie": "http://www.football-data.co.uk/mmz4281/1920/N1.csv"
+multi_season_leagues = {
+    "2018-19": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1819/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1819/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1819/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1819/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1819/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1819/N1.csv"
+    },
+    "2019-20": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1920/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1920/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1920/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1920/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1920/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1920/N1.csv"
+    }
 }
 
-colors = itertools.cycle(Category20[20])
+
+seasons = []
+leagues = []
+for season in multi_season_leagues:
+    seasons.append(season)
+    for league in multi_season_leagues[season]:
+        if league not in leagues:
+            leagues.append(league)
+
 
 pl_colors = {'Liverpool': '#D00027',
              'Man City': '#6CABDD',
@@ -46,7 +56,14 @@ pl_colors = {'Liverpool': '#D00027',
              'Everton': '#003399',
              'Southampton': '#D71920',
              'Norwich': '#00A650',
-             'Watford': '#FBEE23'}
+             'Watford': '#FBEE23',
+             'Cardiff': '#0070B5',
+             'Fulham': '#CC0000',
+             'Huddersfield': '#0E63AD'}
+
+
+colors = itertools.cycle(Category20[20])
+
 
 app = Flask(__name__)
 
@@ -56,19 +73,26 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/data')
+@app.route('/data', methods=['GET', 'POST'])
 def data():
 
-    current_league = request.args.get("league")
+    current_season = request.form.get("season")
+    if current_season == None:
+        current_season = "2019-20"
+
+    current_league = request.form.get("league")
     if current_league == None:
         current_league = "Premier League"
 
-    season_data = parse_season_data(leagues[current_league])
+    season_data = parse_season_data(
+        multi_season_leagues[current_season][current_league])
 
     if current_league == "Premier League":
-        plot = season_chart(season_data, pl_colors, current_league)
+        plot = season_chart(season_data, pl_colors,
+                            current_league, current_season)
     else:
-        plot = season_chart(season_data, colors, current_league)
+        plot = season_chart(season_data, colors,
+                            current_league, current_season)
 
     script_chart, div_chart = components(plot)
 
@@ -76,7 +100,9 @@ def data():
                            script_chart=script_chart,
                            div_chart=div_chart,
                            leagues=leagues,
-                           current_league=current_league)
+                           current_league=current_league,
+                           seasons=seasons,
+                           current_seasons=current_season)
 
 
 # With debug=True, Flask server will auto-reload
