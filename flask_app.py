@@ -1,23 +1,16 @@
 from flask import Flask, render_template, request
 
-import itertools
 import pandas as pd
 from bokeh.embed import components
-from bokeh.palettes import Category20
 
 from data_functions import season_chart
 
 
 # local testing
-filename = "static/data/football_data.csv"
+filename = "data/football_data.csv"
 
 # python anywhere local file
-# filename = "/home/itsbillw/thatsmoreofit/static/data/football_data.csv"
-
-df = pd.read_csv(filename, parse_dates=["Date"])
-leagues = df["League"].unique().tolist()
-seasons = df["Season"].unique().tolist()
-
+# filename = "/home/itsbillw/thatsmoreofit/data/football_data.csv"
 
 app = Flask(__name__)
 
@@ -29,6 +22,10 @@ def home():
 
 @app.route('/data', methods=['GET', 'POST'])
 def data():
+
+    df = pd.read_csv(filename, parse_dates=["Date"])
+    leagues = df["League"].unique().tolist()
+    seasons = df["Season"].unique().tolist()
 
     current_season = request.form.get("season")
     if current_season == None:
