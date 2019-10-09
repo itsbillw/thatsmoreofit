@@ -9,6 +9,71 @@ from bokeh.palettes import Category20
 from bokeh.models import Legend
 
 
+# local testing
+filename = "static/data/football_data.csv"
+
+# python anywhere local file
+# filename = "/home/billw/mysite/static/data/football_data.csv"
+
+
+multi_season_leagues = {
+    "2018-19": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1819/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1819/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1819/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1819/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1819/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1819/N1.csv"
+    },
+    "2019-20": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1920/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1920/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1920/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1920/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1920/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1920/N1.csv"
+    }
+}
+
+
+pl_colors = {'Liverpool': '#D00027',
+             'Man City': '#6CABDD',
+             'Arsenal': '#EF0107',
+             'Chelsea': '#034694',
+             'Leicester': '#003090',
+             'Crystal Palace': '#1B458F',
+             'West Ham': '#7A263A',
+             'Burnley': '#6C1D45',
+             'Bournemouth': '#DA291C',
+             'Tottenham': '#132257',
+             'Wolves': '#FDB913',
+             'Man United': '#DA291C',
+             'Sheffield United': '#EC2227',
+             'Brighton': '#0057B8',
+             'Newcastle': '#241F20',
+             'Aston Villa': '#95BFE5',
+             'Everton': '#003399',
+             'Southampton': '#D71920',
+             'Norwich': '#00A650',
+             'Watford': '#FBEE23',
+             'Cardiff': '#0070B5',
+             'Fulham': '#CC0000',
+             'Huddersfield': '#0E63AD'}
+
+
+def rebuild_data():
+
+    df = pd.DataFrame()
+    for season in multi_season_leagues:
+        for league in multi_season_leagues[season]:
+            season_data = parse_season_data(
+                multi_season_leagues[season][league])
+            season_data["Season"] = season
+            season_data["League"] = league
+            df = df.append(season_data)
+    df.to_csv(filename, index=False)
+
+
 def parse_season_data(filename):
 
     columns = ['Div', 'Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
@@ -58,7 +123,7 @@ def parse_season_data(filename):
     return results
 
 
-def season_chart(df, colors, league, season):
+def season_chart(df, league, season):
 
     p = figure(x_axis_type="datetime", plot_height=550,
                plot_width=1100, toolbar_location='right')
@@ -73,12 +138,14 @@ def season_chart(df, colors, league, season):
         "Team"].unique().tolist()
 
     if league == "Premier League":
+        colors = pl_colors
         for team in teams:
             source = ColumnDataSource(df[df['Team'] == team])
             l = p.line('Date', 'Points', source=source, color=colors[team])
             c = p.circle('Date', 'Points', source=source, color=colors[team])
             legend_it.append((team, [c, l]))
     else:
+        colors = itertools.cycle(Category20[20])
         for team, color in zip(teams, colors):
             source = ColumnDataSource(df[df['Team'] == team])
             l = p.line('Date', 'Points', source=source, color=color)

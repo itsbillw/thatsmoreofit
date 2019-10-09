@@ -1,68 +1,29 @@
 from flask import Flask, render_template, request
 
+import atexit
 import itertools
-
+import pandas as pd
 from bokeh.embed import components
 from bokeh.palettes import Category20
+from apscheduler.schedulers.background import BackgroundScheduler
 
-from data_functions import parse_season_data, season_chart
-
-
-multi_season_leagues = {
-    "2018-19": {
-        "Premier League": "http://www.football-data.co.uk/mmz4281/1819/E0.csv",
-        "La Liga": "http://www.football-data.co.uk/mmz4281/1819/SP1.csv",
-        "Serie A": "http://www.football-data.co.uk/mmz4281/1819/I1.csv",
-        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1819/D1.csv",
-        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1819/F1.csv",
-        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1819/N1.csv"
-    },
-    "2019-20": {
-        "Premier League": "http://www.football-data.co.uk/mmz4281/1920/E0.csv",
-        "La Liga": "http://www.football-data.co.uk/mmz4281/1920/SP1.csv",
-        "Serie A": "http://www.football-data.co.uk/mmz4281/1920/I1.csv",
-        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1920/D1.csv",
-        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1920/F1.csv",
-        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1920/N1.csv"
-    }
-}
+from data_functions import rebuild_data, parse_season_data, season_chart
 
 
-seasons = []
-leagues = []
-for season in multi_season_leagues:
-    seasons.append(season)
-    for league in multi_season_leagues[season]:
-        if league not in leagues:
-            leagues.append(league)
+# local testing
+filename = "static/data/football_data.csv"
+
+# python anywhere local file
+# filename = "/home/billw/mysite/static/data/football_data.csv"
+
+df = pd.read_csv(filename, parse_dates=["Date"])
+leagues = df["League"].unique().tolist()
+seasons = df["Season"].unique().tolist()
 
 
-pl_colors = {'Liverpool': '#D00027',
-             'Man City': '#6CABDD',
-             'Arsenal': '#EF0107',
-             'Chelsea': '#034694',
-             'Leicester': '#003090',
-             'Crystal Palace': '#1B458F',
-             'West Ham': '#7A263A',
-             'Burnley': '#6C1D45',
-             'Bournemouth': '#DA291C',
-             'Tottenham': '#132257',
-             'Wolves': '#FDB913',
-             'Man United': '#DA291C',
-             'Sheffield United': '#EC2227',
-             'Brighton': '#0057B8',
-             'Newcastle': '#241F20',
-             'Aston Villa': '#95BFE5',
-             'Everton': '#003399',
-             'Southampton': '#D71920',
-             'Norwich': '#00A650',
-             'Watford': '#FBEE23',
-             'Cardiff': '#0070B5',
-             'Fulham': '#CC0000',
-             'Huddersfield': '#0E63AD'}
-
-
-colors = itertools.cycle(Category20[20])
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=rebuild_data, trigger="interval", seconds=300)
+scheduler.start()
 
 
 app = Flask(__name__)
@@ -84,15 +45,13 @@ def data():
     if current_league == None:
         current_league = "Premier League"
 
-    season_data = parse_season_data(
-        multi_season_leagues[current_season][current_league])
+    season_data = df[(df["Season"] == current_season) &
+                     (df["League"] == current_league)]
 
     if current_league == "Premier League":
-        plot = season_chart(season_data, pl_colors,
-                            current_league, current_season)
+        plot = season_chart(season_data, current_league, current_season)
     else:
-        plot = season_chart(season_data, colors,
-                            current_league, current_season)
+        plot = season_chart(season_data, current_league, current_season)
 
     script_chart, div_chart = components(plot)
 
@@ -104,6 +63,8 @@ def data():
                            seasons=seasons,
                            current_seasons=current_season)
 
+
+atexit.register(lambda: scheduler.shutdown())
 
 # With debug=True, Flask server will auto-reload
 # when there are code changes
