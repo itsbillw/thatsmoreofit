@@ -1,29 +1,22 @@
 from flask import Flask, render_template, request
 
-import atexit
 import itertools
 import pandas as pd
 from bokeh.embed import components
 from bokeh.palettes import Category20
-from apscheduler.schedulers.background import BackgroundScheduler
 
-from data_functions import rebuild_data, parse_season_data, season_chart
+from data_functions import season_chart
 
 
 # local testing
 filename = "static/data/football_data.csv"
 
 # python anywhere local file
-# filename = "/home/billw/mysite/static/data/football_data.csv"
+# filename = "/home/itsbillw/thatsmoreofit/static/data/football_data.csv"
 
 df = pd.read_csv(filename, parse_dates=["Date"])
 leagues = df["League"].unique().tolist()
 seasons = df["Season"].unique().tolist()
-
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=rebuild_data, trigger="interval", seconds=300)
-scheduler.start()
 
 
 app = Flask(__name__)
@@ -63,8 +56,6 @@ def data():
                            seasons=seasons,
                            current_seasons=current_season)
 
-
-atexit.register(lambda: scheduler.shutdown())
 
 # With debug=True, Flask server will auto-reload
 # when there are code changes
