@@ -35,7 +35,7 @@ pl_colors = {'Liverpool': '#D00027',
 def season_chart(df, league, season):
 
     p = figure(x_axis_type="datetime", plot_height=550,
-               plot_width=1100, toolbar_location='right')
+               plot_width=1100, toolbar_location='above')
 
     p.title.text = league + " " + season
     p.xaxis.axis_label = 'Match Date'
@@ -74,6 +74,8 @@ def season_chart(df, league, season):
     )
 
     p.add_tools(hover)
+
+    p.toolbar.active_drag = None
 
     legend = Legend(items=legend_it)
     legend.click_policy = "hide"

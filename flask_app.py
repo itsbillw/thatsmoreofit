@@ -23,7 +23,7 @@ def home():
 @app.route('/data', methods=['GET', 'POST'])
 def data():
 
-    df = pd.read_csv(filename, parse_dates=["Date"])
+    df = pd.read_csv(filename, parse_dates=["Date"], dayfirst=True)
     leagues = df["League"].unique().tolist()
     seasons = df["Season"].unique().tolist()
 
