@@ -2,10 +2,10 @@ import pandas as pd
 
 
 # local testing
-filename = "static/data/football_data.csv"
+filename = "data/football_data.csv"
 
 # python anywhere local file
-# filename = "/home/itsbillw/thatsmoreofit/static/data/football_data.csv"
+# filename = "/home/itsbillw/thatsmoreofit/data/football_data.csv"
 
 multi_season_leagues = {
     "2018-19": {
