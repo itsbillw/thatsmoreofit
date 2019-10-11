@@ -8,6 +8,30 @@ filename = "data/football_data.csv"
 # filename = "/home/itsbillw/thatsmoreofit/data/football_data.csv"
 
 multi_season_leagues = {
+    "2015-16": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1516/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1516/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1516/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1516/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1516/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1516/N1.csv"
+    },
+    "2016-17": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1617/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1617/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1617/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1617/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1617/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1617/N1.csv"
+    },
+    "2017-18": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/1718/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/1718/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/1718/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/1718/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/1718/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/1718/N1.csv"
+    },
     "2018-19": {
         "Premier League": "http://www.football-data.co.uk/mmz4281/1819/E0.csv",
         "La Liga": "http://www.football-data.co.uk/mmz4281/1819/SP1.csv",
@@ -27,7 +51,21 @@ multi_season_leagues = {
 }
 
 
-def rebuild_data():
+def rebuild_current_season_data(file=filename):
+
+    season = "2019-20"
+    df = pd.read_csv(file, parse_dates=["Date"], dayfirst=True)
+    df = df[df["Season"] != season]
+    for league in multi_season_leagues[season]:
+        season_data = parse_season_data(
+            multi_season_leagues[season][league])
+        season_data["Season"] = season
+        season_data["League"] = league
+        df = df.append(season_data)
+    df.to_csv(file, index=False)
+
+
+def rebuild_all_season_data(file=filename):
 
     df = pd.DataFrame()
     for season in multi_season_leagues:
@@ -37,7 +75,7 @@ def rebuild_data():
             season_data["Season"] = season
             season_data["League"] = league
             df = df.append(season_data)
-    df.to_csv(filename, index=False)
+    df.to_csv(file, index=False)
 
 
 def parse_season_data(filename):
@@ -45,6 +83,7 @@ def parse_season_data(filename):
     columns = ['Div', 'Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']
     source_df = pd.read_csv(filename, usecols=columns,
                             parse_dates=["Date"], dayfirst=True)
+    source_df.dropna(how="all", inplace=True)
 
     results = pd.DataFrame()
 
@@ -90,4 +129,4 @@ def parse_season_data(filename):
 
 
 if __name__ == "__main__":
-    rebuild_data()
+    rebuild_current_season_data()
