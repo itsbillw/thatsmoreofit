@@ -7,10 +7,10 @@ from data_functions import season_chart
 
 
 # local testing
-filename = "data/football_data.csv"
+filename = "data/football_data.parquet"
 
 # python anywhere local file
-# filename = "/home/itsbillw/thatsmoreofit/data/football_data.csv"
+# filename = "/home/itsbillw/thatsmoreofit/data/football_data.parquet"
 
 app = Flask(__name__)
 
@@ -23,7 +23,7 @@ def home():
 @app.route('/data', methods=['GET', 'POST'])
 def data():
 
-    df = pd.read_csv(filename, parse_dates=["Date"], dayfirst=True)
+    df = pd.read_parquet(filename)
     leagues = df["League"].unique().tolist()
     seasons = df["Season"].unique().tolist()
 
