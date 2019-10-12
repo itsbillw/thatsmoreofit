@@ -7,6 +7,15 @@
       <h1 class="h2">Season Chart</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <form name="dropdown-form" action="/data" method="POST">
+          <select class="my-dropdown-menu" name="season" style="padding:8px;border-radius:8px;">
+            {% for season in seasons %}
+            {% if season == current_season %}
+            <option selected value="{{ season }}">{{ season }}</option>
+            {% else %}
+            <option value="{{ season }}">{{ season }}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
           <select class="my-dropdown-menu" name="league" style="padding:8px;border-radius:8px;">
             {% for league in leagues %}
             {% if league == current_league %}

@@ -51,7 +51,7 @@ def data():
                            leagues=leagues,
                            current_league=current_league,
                            seasons=seasons,
-                           current_seasons=current_season)
+                           current_season=current_season)
 
 
 # With debug=True, Flask server will auto-reload
