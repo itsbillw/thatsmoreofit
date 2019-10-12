@@ -46,20 +46,20 @@ def season_chart(df, league, season):
     teams = df.sort_values(["Points"], ascending=False)[
         "Team"].unique().tolist()
 
-    if league == "Premier League":
-        colors = pl_colors
-        for team in teams:
-            source = ColumnDataSource(df[df['Team'] == team])
-            l = p.line('Date', 'Points', source=source, color=colors[team])
-            c = p.circle('Date', 'Points', source=source, color=colors[team])
-            legend_it.append((team, [c, l]))
-    else:
-        colors = itertools.cycle(Category20[20])
-        for team, color in zip(teams, colors):
-            source = ColumnDataSource(df[df['Team'] == team])
-            l = p.line('Date', 'Points', source=source, color=color)
-            c = p.circle('Date', 'Points', source=source, color=color)
-            legend_it.append((team, [c, l]))
+    # if league == "Premier League":
+    #     colors = pl_colors
+    #     for team in teams:
+    #         source = ColumnDataSource(df[df['Team'] == team])
+    #         l = p.line('Date', 'Points', source=source, color=colors[team])
+    #         c = p.circle('Date', 'Points', source=source, color=colors[team])
+    #         legend_it.append((team, [c, l]))
+    # else:
+    colors = itertools.cycle(Category20[20])
+    for team, color in zip(teams, colors):
+        source = ColumnDataSource(df[df['Team'] == team])
+        l = p.line('Date', 'Points', source=source, color=color)
+        c = p.circle('Date', 'Points', source=source, color=color)
+        legend_it.append((team, [c, l]))
 
     hover = HoverTool(
         tooltips=[
