@@ -38,10 +38,7 @@ def data():
     season_data = df[(df["Season"] == current_season) &
                      (df["League"] == current_league)]
 
-    if current_league == "Premier League":
-        plot = season_chart(season_data, current_league, current_season)
-    else:
-        plot = season_chart(season_data, current_league, current_season)
+    plot = season_chart(season_data, current_league, current_season)
 
     script_chart, div_chart = components(plot)
 

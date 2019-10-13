@@ -5,6 +5,7 @@ from bokeh.models import ColumnDataSource
 from bokeh.models.tools import HoverTool
 from bokeh.palettes import Category20
 from bokeh.models import Legend
+from bokeh.models import Panel, Tabs
 
 
 pl_colors = {'Liverpool': '#D00027',
@@ -34,14 +35,21 @@ pl_colors = {'Liverpool': '#D00027',
 
 def season_chart(df, league, season):
 
-    p = figure(x_axis_type="datetime", plot_height=550,
+    p1 = figure(x_axis_type="datetime", plot_height=600,
                plot_width=1100, toolbar_location='above')
 
-    p.title.text = league + " " + season
-    p.xaxis.axis_label = 'Match Date'
-    p.yaxis.axis_label = 'Points'
+    p1.title.text = league + " " + season
+    p1.xaxis.axis_label = 'Match Date'
+    p1.yaxis.axis_label = 'Points'
 
-    legend_it = []
+    p2 = figure(plot_height=600, plot_width=1100, toolbar_location='above')
+
+    p2.title.text = league + " " + season
+    p2.xaxis.axis_label = 'Games Played'
+    p2.yaxis.axis_label = 'Points'
+
+    legend_it1 = []
+    legend_it2 = []
 
     teams = df.sort_values(["Points"], ascending=False)[
         "Team"].unique().tolist()
@@ -57,28 +65,41 @@ def season_chart(df, league, season):
     colors = itertools.cycle(Category20[20])
     for team, color in zip(teams, colors):
         source = ColumnDataSource(df[df['Team'] == team])
-        l = p.line('Date', 'Points', source=source, color=color)
-        c = p.circle('Date', 'Points', source=source, color=color)
-        legend_it.append((team, [c, l]))
+        l1 = p1.line('Date', 'Points', source=source, color=color)
+        c1 = p1.circle('Date', 'Points', source=source, color=color)
+        legend_it1.append((team, [c1, l1]))
+        l2 = p2.line('Played', 'Points', source=source, color=color)
+        c2 = p2.circle('Played', 'Points', source=source, color=color)
+        legend_it2.append((team, [c2, l2]))
 
     hover = HoverTool(
         tooltips=[
             ('Team', '@Team'),
             ('Opposition', '@Opposition (@HomeAway)'),
-            ('Date', '@Date{%F}'),
+            ('Date', '@Date{%d-%b-%Y}'),
             ('Result', '@FTHG - @FTAG (@Result)'),
-            ('Points', '@Points'),
-            ('Match', '@Played of 38')
+            ('Points', '@Points after @Played games')
         ],
         formatters={'Date': 'datetime'}
     )
 
-    p.add_tools(hover)
+    p1.add_tools(hover)
+    p2.add_tools(hover)
 
-    p.toolbar.active_drag = None
+    p1.toolbar.active_drag = None
+    p2.toolbar.active_drag = None
 
-    legend = Legend(items=legend_it)
-    legend.click_policy = "hide"
-    p.add_layout(legend, 'left')
+    legend1 = Legend(items=legend_it1)
+    legend1.click_policy = "hide"
+    p1.add_layout(legend1, 'right')
 
-    return p
+    legend2 = Legend(items=legend_it2)
+    legend2.click_policy = "hide"
+    p2.add_layout(legend2, 'right')
+
+    tab1 = Panel(child=p1, title="View by Match Date")
+    tab2 = Panel(child=p2, title="View by Games Played")
+
+    tabs = Tabs(tabs=[ tab1, tab2 ])
+
+    return tabs
