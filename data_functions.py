@@ -7,31 +7,7 @@ from bokeh.palettes import Category20
 from bokeh.models import Legend
 from bokeh.models import Panel, Tabs
 
-
-pl_colors = {'Liverpool': '#D00027',
-             'Man City': '#6CABDD',
-             'Arsenal': '#EF0107',
-             'Chelsea': '#034694',
-             'Leicester': '#003090',
-             'Crystal Palace': '#1B458F',
-             'West Ham': '#7A263A',
-             'Burnley': '#6C1D45',
-             'Bournemouth': '#DA291C',
-             'Tottenham': '#132257',
-             'Wolves': '#FDB913',
-             'Man United': '#DA291C',
-             'Sheffield United': '#EC2227',
-             'Brighton': '#0057B8',
-             'Newcastle': '#241F20',
-             'Aston Villa': '#95BFE5',
-             'Everton': '#003399',
-             'Southampton': '#D71920',
-             'Norwich': '#00A650',
-             'Watford': '#FBEE23',
-             'Cardiff': '#0070B5',
-             'Fulham': '#CC0000',
-             'Huddersfield': '#0E63AD'}
-
+from football_dicts import pl_colors
 
 def season_chart(df):
 
