@@ -38,7 +38,7 @@ def data():
     season_data = df[(df["Season"] == current_season) &
                      (df["League"] == current_league)]
 
-    plot = season_chart(season_data, current_league, current_season)
+    plot = season_chart(season_data)
 
     script_chart, div_chart = components(plot)
 

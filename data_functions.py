@@ -33,18 +33,20 @@ pl_colors = {'Liverpool': '#D00027',
              'Huddersfield': '#0E63AD'}
 
 
-def season_chart(df, league, season):
+def season_chart(df):
 
     p1 = figure(x_axis_type="datetime", plot_height=600,
                plot_width=1100, toolbar_location='above')
 
-    p1.title.text = league + " " + season
+    chart_title_text = df["League"].unique()[0] + " " + df["Season"].unique()[0]
+
+    p1.title.text = chart_title_text
     p1.xaxis.axis_label = 'Match Date'
     p1.yaxis.axis_label = 'Points'
 
     p2 = figure(plot_height=600, plot_width=1100, toolbar_location='above')
 
-    p2.title.text = league + " " + season
+    p2.title.text = chart_title_text
     p2.xaxis.axis_label = 'Games Played'
     p2.yaxis.axis_label = 'Points'
 
