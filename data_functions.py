@@ -1,53 +1,49 @@
 import itertools
 
 from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, CDSView, GroupFilter
 from bokeh.models.tools import HoverTool
 from bokeh.palettes import Category20
 from bokeh.models import Legend
 from bokeh.models import Panel, Tabs
 
+import numpy as np
+
 from football_dicts import pl_colors
 
-def season_chart(df):
+def season_chart(source, selected_league, selected_season, teams):
+
+    print(teams)
+
+    seasons = np.unique(source.data["Season"]).tolist()
+    leagues = np.unique(source.data["League"]).tolist()
 
     p1 = figure(x_axis_type="datetime", plot_height=600,
                plot_width=1100, toolbar_location='above')
 
-    chart_title_text = df["League"].unique()[0] + " " + df["Season"].unique()[0]
+    # chart_title_text = df["League"].unique()[0] + " " + df["Season"].unique()[0]
 
-    p1.title.text = chart_title_text
+    # p1.title.text = chart_title_text
     p1.xaxis.axis_label = 'Match Date'
     p1.yaxis.axis_label = 'Points'
 
     p2 = figure(plot_height=600, plot_width=1100, toolbar_location='above')
 
-    p2.title.text = chart_title_text
+    # p2.title.text = chart_title_text
     p2.xaxis.axis_label = 'Games Played'
     p2.yaxis.axis_label = 'Points'
 
     legend_it1 = []
     legend_it2 = []
 
-    teams = df.sort_values(["Points"], ascending=False)[
-        "Team"].unique().tolist()
-
-    # if league == "Premier League":
-    #     colors = pl_colors
-    #     for team in teams:
-    #         source = ColumnDataSource(df[df['Team'] == team])
-    #         l = p.line('Date', 'Points', source=source, color=colors[team])
-    #         c = p.circle('Date', 'Points', source=source, color=colors[team])
-    #         legend_it.append((team, [c, l]))
-    # else:
     colors = itertools.cycle(Category20[20])
     for team, color in zip(teams, colors):
-        source = ColumnDataSource(df[df['Team'] == team])
-        l1 = p1.line('Date', 'Points', source=source, color=color)
-        c1 = p1.circle('Date', 'Points', source=source, color=color)
+        view1 = CDSView(source=source, filters=[GroupFilter(column_name='Team', group=team)])
+        l1 = p1.line('Date', 'Points', source=source, view=view1, color=color)
+        c1 = p1.circle('Date', 'Points', source=source, view=view1, color=color)
         legend_it1.append((team, [c1, l1]))
-        l2 = p2.line('Played', 'Points', source=source, color=color)
-        c2 = p2.circle('Played', 'Points', source=source, color=color)
+        l2 = p2.line('Played', 'Points', source=source, view=view1, color=color)
+        c2 = p2.circle('Played', 'Points', source=source, view=view1, color=color)
         legend_it2.append((team, [c2, l2]))
 
     hover = HoverTool(
