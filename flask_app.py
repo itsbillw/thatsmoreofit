@@ -29,7 +29,7 @@ def data():
 
     current_season = request.form.get("season")
     if current_season == None:
-        current_season = "2019-20"
+        current_season = "2020-21"
 
     current_league = request.form.get("league")
     if current_league == None:

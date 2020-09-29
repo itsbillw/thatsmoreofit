@@ -11,7 +11,7 @@ filename = "data/football_data.parquet"
 
 def rebuild_current_season_data(file=filename):
 
-    season = "2019-20"
+    season = "2020-21"
     df = pd.read_parquet(file)
     df = df[df["Season"] != season]
     for league in multi_season_leagues[season]:

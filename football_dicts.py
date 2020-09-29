@@ -214,6 +214,14 @@ multi_season_leagues = {
         "Bundesliga": "http://www.football-data.co.uk/mmz4281/1920/D1.csv",
         "Ligue 1": "http://www.football-data.co.uk/mmz4281/1920/F1.csv",
         "Eredivisie": "http://www.football-data.co.uk/mmz4281/1920/N1.csv"
+    },
+    "2020-21": {
+        "Premier League": "http://www.football-data.co.uk/mmz4281/2021/E0.csv",
+        "La Liga": "http://www.football-data.co.uk/mmz4281/2021/SP1.csv",
+        "Serie A": "http://www.football-data.co.uk/mmz4281/2021/I1.csv",
+        "Bundesliga": "http://www.football-data.co.uk/mmz4281/2021/D1.csv",
+        "Ligue 1": "http://www.football-data.co.uk/mmz4281/2021/F1.csv",
+        "Eredivisie": "http://www.football-data.co.uk/mmz4281/2021/N1.csv"
     }
 }
 

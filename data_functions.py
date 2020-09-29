@@ -78,6 +78,6 @@ def season_chart(df):
     tab1 = Panel(child=p1, title="View by Match Date")
     tab2 = Panel(child=p2, title="View by Games Played")
 
-    tabs = Tabs(tabs=[ tab1, tab2 ])
+    tabs = Tabs(tabs=[ tab2, tab1 ])
 
     return tabs
